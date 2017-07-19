@@ -14,6 +14,8 @@ using namespace std;
 class map{
 public:
     vector<dRoom> roomVector;
+    //vector<tRoom> triRoomVec;
+
     //variables
     int totalConnections;
     int totalRooms;
@@ -26,6 +28,7 @@ public:
     virtual void setSize();
     virtual void placeHaz();
     virtual void printMap();
+    virtual void printInfo();
     virtual void checkHaz();
 };
 
@@ -33,9 +36,18 @@ public:
 //"Triangular" Map, every room has exactly three connections, 2d
 class tMap : public map{
 public:
+
+    vector<tRoom> triRoomVec;
+
     void setSize();
 
     int buildMap();
+
+    void placeHaz();
+
+    void printMap();
+
+    void printInfo();
 };
 
 //Dungeon Map, connects rooms in a semi-linear fashion, 3d

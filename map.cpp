@@ -13,11 +13,11 @@ pit bottomlessPits;
 int map::buildMap(int scale){}
 
 void map::setSize(){}
-
 void map::placeHaz(){}
 void map::checkHaz(){}
 
 void map::printMap(){}
+void map::printInfo(){}
 
 
 
@@ -39,6 +39,64 @@ void tMap::setSize(){
     cout << "Building Map... (" << scale << ")" << endl <<endl;
 }
 
+
+
+void tMap::placeHaz(){
+    //1 wumpus
+    //2 bat / 20 rooms
+    //1 pit/ 20 rooms
+    int randy;
+    for(int i = 0; i < scale/10;){
+        randy = rand() % totalRooms;
+        if(!triRoomVec[randy].hasHazard && randy != 0){
+            triRoomVec[randy].hasHazard = true;
+            triRoomVec[randy].hasSomething++;
+            triRoomVec[randy].hasPit = true;
+            bottomlessPits.wherePits.push_back(randy);
+            i++;
+        }
+    }
+    randy = rand() % totalRooms - 1;
+    wump.whereHaz = randy + 1;
+    triRoomVec[randy + 1].hasSomething++;
+
+    for(int i = 0; i < scale/10;){
+        randy = rand() % totalRooms;
+        if(!triRoomVec[randy].hasHazard  && randy != 0){
+            caveBats.whereBats.push_back(randy);
+            triRoomVec[randy].hasSomething++;
+            triRoomVec[randy].hasBat = true;
+            i++;
+        }
+    }
+
+
+}
+
+void tMap::printMap(){
+    //print final map
+    cout << endl;
+    for(int g = 0; g < totalRooms; g++){
+        cout << g + 1 << endl << triRoomVec[g].connections[0] + 1 << " " << triRoomVec[g].connections[1] + 1
+             << " " << triRoomVec[g].connections[2] + 1 << "      hasSomething == " << triRoomVec[g].hasSomething <<   endl << endl;
+    }
+
+}
+
+void tMap::printInfo(){
+    cout <<"Wumpus location: " << wump.whereHaz + 1 << endl;
+
+    for(int i = 0; i < caveBats.whereBats.size(); i++){
+        cout << "Bat" << i+1 << " location: " << caveBats.whereBats[i] + 1 << endl;
+    }
+
+    for(int i = 0; i < bottomlessPits.wherePits.size(); i++){
+        cout << "Pit" << i+1 << " location: " << bottomlessPits.wherePits[i] + 1 << endl;
+    }
+    cout << endl;
+}
+
+
 int tMap::buildMap() {
     //begin failure timer
     int begin;
@@ -47,6 +105,15 @@ int tMap::buildMap() {
     setSize();
     //array of rooms, scale = # of rooms
     tRoom roomList[scale];
+
+    for(int i = 0; i < scale; i++){
+        triRoomVec.push_back(roomList[i]);
+    }
+    /*
+    for(int g = 0; g < scale; g++){
+        cout << endl << "room " << g + 1 <<  "  hasSomething == " << triRoomVec[g].hasSomething <<   endl << endl;
+    }
+     */
 
     totalConnections = 3;
     totalRooms = scale;
@@ -61,7 +128,7 @@ int tMap::buildMap() {
             if (tooLong - begin > 1) { //FAILED!! reset all rooms and return 0 so function is called again.
                 for (int resetRoom = 0; resetRoom < totalRooms; resetRoom++) {
                     for (int resetConnections = 0; resetConnections < totalConnections; resetConnections++) {
-                        roomList[resetRoom].connections[resetConnections] = -1;
+                        triRoomVec[resetRoom].connections[resetConnections] = -1;
                     }
                 }
                 cout << "Patience is a virtue..." << endl;
@@ -71,19 +138,24 @@ int tMap::buildMap() {
 
             //if connection[j] is occupied, continue looping
             //else, connect randy to i through connection[j] (and vice versa)
-            if (roomList[i].connections[j] != -1) {
+            if (triRoomVec[i].connections[j] != -1) {
                 j++;
             }
             else {
                 int randy = (rand() % totalRooms);
-                if (randy != i && roomList[randy].checkConnecs(i) && roomList[i].checkConnecs(randy)) {
-                    roomList[i].roomConnection(j, randy);
-                    roomList[randy].roomConnection(roomList[randy].freeRoom(), i);
+                if (randy != i && triRoomVec[randy].checkConnecs(i) && triRoomVec[i].checkConnecs(randy)) {
+                    triRoomVec[i].connections[j] = randy;
+                    triRoomVec[i].actualConnecs.push_back(randy);
+
+                    triRoomVec[randy].connections[triRoomVec[randy].freeRoom()] = i;
+                    triRoomVec[randy].actualConnecs.push_back(i);
                     j++;
                 }
             }
         }
     }
+
+    placeHaz();
     /*
     //print final map
     for(int g = 0; g < totalRooms; g++){
@@ -91,10 +163,8 @@ int tMap::buildMap() {
              << " " << roomList[g].connections[2] + 1 << " " <<  endl << endl;
     }
      */
-    cout << "Map Built." << endl;
-    cout << endl << endl
-         << " ------------------------------------------------------------------------------------- ";
-    return 1;
+    cout << endl << "Map Built." << endl << endl;
+    //return 1;
 }
 
 
@@ -191,25 +261,6 @@ void dMap::floorTrack(int i){
     floorVector.push_back({roomVector[i].coords[2], i});
     return;
 }
-
-//NOT YET WORKING
-/*
-void dMap::roundTwoConnections(int i){
-    for(int z = 0; z < i; z++){
-
-        if( roomVector
-
-            ((abs(roomVector[i].coords[0] - roomVector[z].coords[0]) == 1 && roomVector[i].coords[1] == roomVector[z].coords[1])
-            ||
-            (roomVector[i].coords[0] == roomVector[z].coords[0] && abs(roomVector[i].coords[1] - roomVector[z].coords[1]) == 1 ))
-
-           )
-        {
-
-        }
-    }
-}
- */
 
 
 void dMap:: connectRooms(){

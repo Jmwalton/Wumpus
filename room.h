@@ -12,6 +12,9 @@ public:
     int connections[];
     void roomConnection(int i, int j);
 
+    vector<int> actualConnecs;
+
+
     bool hasHazard = false;
     int hasSomething = 0;
     bool hasBat = false;
@@ -27,7 +30,7 @@ public:
 
 class tRoom : public room {
 public:
-    int connections[3] = {-1, -1, -1};
+    vector<int> connections = {-1, -1, -1};
 
 
     //needs to be called in vice versa as well
@@ -46,7 +49,10 @@ public:
 
     vector<int> connections = {-1, -1, -1, -1};
     vector<int> extraConnections = {-1, -1, -1 , -1};
-    vector<int> actualConnecs;
+    //vector<int> actualConnecs;
+
+
+
     //int connections[4] = {-1, -1, -1, -1};
     //int dualConnections[4] = {-1, -1, -1, -1};
     //int shootsAndLadders[2] = {-1, -1};

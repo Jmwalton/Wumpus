@@ -7,7 +7,12 @@ using namespace std;
 
 
 int main() {
-    playGame();
+    //playGameD();
+    //tri.buildMap();
+    //tri.printMap();
+    //tri.printInfo();
+    //playGameT();
 
+    playWumpus();
     return 0;
 }

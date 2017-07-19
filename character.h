@@ -26,6 +26,8 @@ public:
 class bat : public hazard{
 public:
     void isNear();
+
+    void tBatAction();
     void action();
 
 
@@ -47,6 +49,7 @@ class wumpus: public hazard{
 public:
     void isNear();
 
+    void tWander();
     void wumpWander();
 };
 

@@ -17,6 +17,32 @@ void bat::isNear(){
 }
 
 //TODO: bat disappears after move
+void bat:: tBatAction(){
+    bool succMove = false;
+    while(!succMove){
+        int randy = rand() % tri.scale;
+        if(!tri.triRoomVec[randy].hasHazard){
+            //remove bat befroe moving player
+            tri.triRoomVec[playerChar.where].hasBat = false;
+            tri.triRoomVec[playerChar.where].hasSomething--;
+
+            playerChar.where = randy;
+            cout << endl << "A BAT!" << endl
+                 << "Before you even know is happening, a bat swoops you up and carries you to room " << randy + 1 << endl <<endl;
+            succMove = true;
+
+            //'move' bat to new room (make new bat)
+            randy = rand() % tri.scale;
+            //if randy happens to equal the current room or a room with a bat already, forget about it... bats dead.
+            if(!tri.triRoomVec[randy].hasBat && randy != playerChar.where){
+                whereBats.push_back(randy);
+                tri.triRoomVec[randy].hasSomething++;
+                tri.triRoomVec[randy].hasBat = true;
+            }
+        }
+    }
+}
+
 void bat::action(){
     bool succMove = false;
     while(!succMove){
@@ -61,6 +87,18 @@ void wumpus::isNear(){
          << "**********************************************************************" << endl
          << "************ Foul smells abound! the Wumpus is near... ***************" << endl
          << "**********************************************************************" << endl;
+}
+
+
+void wumpus:: tWander(){
+    int randy = rand() % 4;
+    if(randy > 2){
+        randy = rand() % tri.triRoomVec[whereHaz].actualConnecs.size();
+        //cout <<endl << endl << "WUMP WANDER FROM " << whereHaz + 1 << " TO " << dung.roomVector[whereHaz].actualConnecs[randy] + 1 << endl << endl;
+        tri.triRoomVec[whereHaz].hasSomething--;
+        whereHaz = tri.triRoomVec[whereHaz].actualConnecs[randy];
+        tri.triRoomVec[whereHaz].hasSomething++;
+    }
 }
 
 void wumpus::wumpWander(){
